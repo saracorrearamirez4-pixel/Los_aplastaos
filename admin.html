@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Administrador - Los Aplastaos</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body class="bg-aplastaos text-white">
+
+    <script>
+        (async function protegerPagina(rolesPermitidos) {
+            try {
+                const res = await fetch('verificar_sesion.php');
+                const data = await res.json();
+                if (!data.ok || !rolesPermitidos.includes(data.rol)) {
+                    window.location.href = 'index.html';
+                }
+            } catch (e) {
+                window.location.href = 'index.html';
+            }
+        })(['admin']);
+    </script>
+
+    <nav class="navbar px-4 py-3">
+
+        <div class="d-flex align-items-center">
+
+            <img src="aplasta'os.jpg"
+                 class="logo-navbar"
+                 alt="Logo Los Aplastaos">
+
+            <h4 class="ms-3 mb-0 text-shadow-aplastaos">
+                Panel Administrativo
+            </h4>
+
+        </div>
+
+
+        <div class="ms-auto">
+
+            <a href="logout.php"
+               class="btn btn-aplastaos">
+
+                Cerrar Sesión
+
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <div class="container py-4">
+
+
+        <h2 class="text-center mb-5 text-shadow-aplastaos">
+            👑 Centro de Control
+        </h2>
+
+
+        <!-- ESTADÍSTICAS -->
+
+        <div class="row mb-5">
+
+
+            <div class="col-md-3 mb-3">
+
+                <div class="card card-admin">
+
+                    <div class="card-body text-center">
+
+                        <h5>
+                            Ventas Hoy
+                        </h5>
+
+                        <h2 id="statVentas">
+                            $0
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3 mb-3">
+
+                <div class="card card-admin">
+
+                    <div class="card-body text-center">
+
+                        <h5>
+                            Pedidos Activos
+                        </h5>
+
+                        <h2 id="statPedidosActivos">
+                            0
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3 mb-3">
+
+                <div class="card card-admin">
+
+                    <div class="card-body text-center">
+
+                        <h5>
+                            Domicilios
+                        </h5>
+
+                        <h2 id="statDomicilios">
+                            0
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3 mb-3">
+
+                <div class="card card-admin">
+
+                    <div class="card-body text-center">
+
+                        <h5>
+                            Pendientes Cocina
+                        </h5>
+
+                        <h2 id="statPendientesCocina">
+                            0
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ÁREAS -->
+
+        <h4 class="mb-4 text-shadow-aplastaos">
+            Áreas del Sistema
+        </h4>
+
+
+        <div class="row">
+
+
+            <div class="col-md-4 mb-4">
+
+                <a href="menu.html"
+                   class="text-decoration-none">
+
+                    <div class="card card-admin-opciones">
+
+                        <div class="card-body text-center">
+
+                            <h3>
+                                🍔
+                            </h3>
+
+                            <h5>
+                                Menú / Meseros
+                            </h5>
+
+                            <p>
+                                Gestionar pedidos
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <div class="col-md-4 mb-4">
+
+                <a href="cocina.html"
+                   class="text-decoration-none">
+
+                    <div class="card card-admin-opciones">
+
+                        <div class="card-body text-center">
+
+                            <h3>
+                                👨‍🍳
+                            </h3>
+
+                            <h5>
+                                Cocina
+                            </h5>
+
+                            <p>
+                                Ver pedidos en preparación
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <div class="col-md-4 mb-4">
+
+                <a href="domicilios.html"
+                   class="text-decoration-none">
+
+                    <div class="card card-admin-opciones">
+
+                        <div class="card-body text-center">
+
+                            <h3>
+                                🛵
+                            </h3>
+
+                            <h5>
+                                Domicilios
+                            </h5>
+
+                            <p>
+                                Seguimiento de entregas
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ARQUEO -->
+
+        <div class="card card-admin mt-4">
+
+            <div class="card-body">
+
+                <h4 class="mb-4">
+                    💰 Arqueo del Día
+                </h4>
+
+
+                <table class="table table-bordered text-white">
+
+                    <tbody>
+
+                        <tr>
+
+                            <th>
+                                Efectivo
+                            </th>
+
+                            <td id="arqueoEfectivo">
+                                $0
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+                                Transferencias
+                            </th>
+
+                            <td id="arqueoTransferencia">
+                                $0
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+                                Tarjeta
+                            </th>
+
+                            <td id="arqueoTarjeta">
+                                $0
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <th>
+                                Total
+                            </th>
+
+                            <td>
+
+                                <strong id="arqueoTotal">
+                                    $0
+                                </strong>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+
+                <button class="btn btn-aplastaos" id="btnCerrarCaja">
+                    Cerrar Caja
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        function formatearMoneda(valor) {
+            return '$' + Number(valor).toLocaleString('es-CO');
+        }
+
+        async function cargarDashboard() {
+            try {
+                const res = await fetch('obtener_dashboard.php');
+                const data = await res.json();
+                if (!data.ok) return;
+
+                document.getElementById('statVentas').textContent = formatearMoneda(data.ventas_hoy);
+                document.getElementById('statPedidosActivos').textContent = data.pedidos_activos;
+                document.getElementById('statDomicilios').textContent = data.domicilios_activos;
+                document.getElementById('statPendientesCocina').textContent = data.pendientes_cocina;
+
+                document.getElementById('arqueoEfectivo').textContent = formatearMoneda(data.arqueo.efectivo);
+                document.getElementById('arqueoTransferencia').textContent = formatearMoneda(data.arqueo.transferencia);
+                document.getElementById('arqueoTarjeta').textContent = formatearMoneda(data.arqueo.tarjeta);
+                document.getElementById('arqueoTotal').textContent = formatearMoneda(data.arqueo.total);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        document.getElementById('btnCerrarCaja').addEventListener('click', async function () {
+            if (!confirm('¿Seguro que quieres cerrar la caja del día?')) return;
+
+            await fetch('cerrar_caja.php', { method: 'POST' });
+            alert('Caja cerrada correctamente.');
+            cargarDashboard();
+        });
+
+        cargarDashboard();
+        setInterval(cargarDashboard, 10000);
+    </script>
+
+</body>
+
+</html>

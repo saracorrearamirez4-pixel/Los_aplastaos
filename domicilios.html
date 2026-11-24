@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Domicilios - Los Aplastaos</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body class="bg-aplastaos text-white">
+
+    <script>
+        (async function protegerPagina(rolesPermitidos) {
+            try {
+                const res = await fetch('verificar_sesion.php');
+                const data = await res.json();
+                if (!data.ok || !rolesPermitidos.includes(data.rol)) {
+                    window.location.href = 'index.html';
+                }
+            } catch (e) {
+                window.location.href = 'index.html';
+            }
+        })(['domicilio', 'admin']);
+    </script>
+
+    <nav class="navbar px-4 py-3">
+
+        <div class="d-flex align-items-center">
+
+            <img src="aplasta'os.jpg"
+                 class="logo-navbar"
+                 alt="Logo Los Aplastaos">
+
+            <h4 class="ms-3 mb-0 text-shadow-aplastaos">
+                🛵 Domicilios
+            </h4>
+
+        </div>
+
+        <a href="logout.php"
+           class="btn btn-aplastaos">
+
+            Cerrar Sesión
+
+        </a>
+
+    </nav>
+
+
+    <div class="container py-4">
+
+        <h2 class="text-center mb-5 text-shadow-aplastaos">
+            🛵 Gestión de Domicilios
+        </h2>
+
+
+        <div class="row" id="listaDomicilios">
+            <p class="text-center w-100">Cargando domicilios...</p>
+        </div>
+
+    </div>
+
+    <script>
+        async function cargarDomicilios() {
+            try {
+                const res = await fetch('obtener_domicilios.php');
+                const data = await res.json();
+                const contenedor = document.getElementById('listaDomicilios');
+
+                if (!data.ok) {
+                    contenedor.innerHTML = '<p class="text-center w-100">No se pudieron cargar los domicilios.</p>';
+                    return;
+                }
+
+                if (data.domicilios.length === 0) {
+                    contenedor.innerHTML = '<p class="text-center w-100">No hay domicilios listos para entregar 🛵</p>';
+                    return;
+                }
+
+                contenedor.innerHTML = data.domicilios.map(function (d) {
+                    return (
+                        '<div class="col-md-6 mb-4">' +
+                            '<div class="card domicilio-card">' +
+                                '<div class="card-body">' +
+                                    '<div class="d-flex justify-content-between">' +
+                                        '<h4>Pedido ' + d.codigo_comanda + '</h4>' +
+                                        '<span class="estado-listo">Listo</span>' +
+                                    '</div>' +
+                                    '<hr>' +
+                                    '<p><strong>Cliente:</strong> ' + (d.nombre_cliente || 'Sin datos') + '</p>' +
+                                    '<p><strong>Teléfono:</strong> ' + (d.telefono || '-') + '</p>' +
+                                    '<p><strong>Dirección:</strong> ' + (d.direccion || '-') + '</p>' +
+                                    '<p><strong>Sector:</strong> ' + (d.sector || '-') + '</p>' +
+                                    '<button class="btn btn-aplastaos w-100" onclick="marcarEntregado(' + d.id_pedido + ')">' +
+                                        '🛵 MARCAR COMO ENTREGADO' +
+                                    '</button>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>'
+                    );
+                }).join('');
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function marcarEntregado(idPedido) {
+            const datos = new FormData();
+            datos.append('id_pedido', idPedido);
+
+            await fetch('marcar_entregado.php', { method: 'POST', body: datos });
+            cargarDomicilios();
+        }
+
+        cargarDomicilios();
+        setInterval(cargarDomicilios, 5000);
+    </script>
+
+</body>
+
+</html>

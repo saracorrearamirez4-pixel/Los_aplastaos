@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cocina - Los Aplastaos</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body class="bg-aplastaos text-white">
+
+    <script>
+        (async function protegerPagina(rolesPermitidos) {
+            try {
+                const res = await fetch('verificar_sesion.php');
+                const data = await res.json();
+                if (!data.ok || !rolesPermitidos.includes(data.rol)) {
+                    window.location.href = 'index.html';
+                }
+            } catch (e) {
+                window.location.href = 'index.html';
+            }
+        })(['cocina', 'admin']);
+    </script>
+
+    <nav class="navbar px-4 py-3">
+
+        <div class="d-flex align-items-center">
+
+            <img src="aplasta'os.jpg"
+                 class="logo-navbar"
+                 alt="Logo Los Aplastaos">
+
+            <h4 class="ms-3 mb-0 text-shadow-aplastaos">
+                 Cocina
+            </h4>
+
+        </div>
+
+        <a href="logout.php"
+           class="btn btn-aplastaos">
+
+            Cerrar Sesión
+
+        </a>
+
+    </nav>
+
+
+    <div class="container py-4">
+
+        <h2 class="text-center mb-5 text-shadow-aplastaos">
+            📋 Pedidos en Cocina
+        </h2>
+
+
+        <div class="row" id="listaPedidos">
+            <p class="text-center w-100">Cargando pedidos...</p>
+        </div>
+
+    </div>
+
+    <script>
+        async function cargarPedidos() {
+            try {
+                const res = await fetch('obtener_pedidos_cocina.php');
+                const data = await res.json();
+                const contenedor = document.getElementById('listaPedidos');
+
+                if (!data.ok) {
+                    contenedor.innerHTML = '<p class="text-center w-100">No se pudieron cargar los pedidos.</p>';
+                    return;
+                }
+
+                if (data.pedidos.length === 0) {
+                    contenedor.innerHTML = '<p class="text-center w-100">No hay pedidos pendientes 🎉</p>';
+                    return;
+                }
+
+                contenedor.innerHTML = data.pedidos.map(function (pedido) {
+                    const productos = pedido.productos.map(function (p) {
+                        return '<li>' + p.cantidad + ' ' + p.nombre_producto + '</li>';
+                    }).join('');
+
+                    const origen = pedido.tipo_pedido === 'domicilio'
+                        ? '🛵 Domicilio'
+                        : '🪑 Mesa ' + pedido.mesa;
+
+                    return (
+                        '<div class="col-md-6 mb-4">' +
+                            '<div class="card pedido-cocina">' +
+                                '<div class="card-body">' +
+                                    '<div class="d-flex justify-content-between">' +
+                                        '<h4>Pedido ' + pedido.codigo_comanda + '</h4>' +
+                                        '<span class="estado-pendiente">Pendiente</span>' +
+                                    '</div>' +
+                                    '<hr>' +
+                                    '<p><strong>' + origen + '</strong></p>' +
+                                    '<h5>Productos</h5>' +
+                                    '<ul>' + productos + '</ul>' +
+                                    '<p><strong>Forma de pago:</strong> ' + pedido.forma_pago + '</p>' +
+                                    '<button class="btn btn-aplastaos w-100" onclick="marcarListo(' + pedido.id_pedido + ')">' +
+                                        '✅ MARCAR COMO LISTO' +
+                                    '</button>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>'
+                    );
+                }).join('');
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function marcarListo(idPedido) {
+            const datos = new FormData();
+            datos.append('id_pedido', idPedido);
+
+            await fetch('marcar_listo.php', { method: 'POST', body: datos });
+            cargarPedidos();
+        }
+
+        cargarPedidos();
+        setInterval(cargarPedidos, 5000);
+    </script>
+
+</body>
+
+</html>
